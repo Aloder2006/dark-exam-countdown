@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 
 interface Exam {
   id: number;
@@ -28,9 +28,9 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
   };
 
   return (
-    <div className={`bg-gray-800 rounded-lg p-6 border transition-all duration-200 ${
+    <div className={`bg-gray-800 rounded-xl p-6 border transition-all duration-300 ${
       isPast ? 'border-gray-700 opacity-60' : 
-      isUpcoming ? 'border-blue-500' : 'border-gray-600'
+      isUpcoming ? 'border-blue-500 hover:border-blue-400' : 'border-gray-600'
     }`}>
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-xl font-bold text-white">{exam.subject}</h3>
@@ -42,23 +42,18 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
       
       <div className="space-y-3">
         <div className="flex items-center text-gray-300">
-          <Calendar className="h-5 w-5 mr-3 text-blue-400" />
+          <Calendar className="h-5 w-5 ml-3 text-blue-400" />
           <span className="font-medium">{exam.day}</span>
           <span className="mx-2">•</span>
           <span>{exam.date}</span>
         </div>
         
         <div className="flex items-center text-gray-300">
-          <Clock className="h-5 w-5 mr-3 text-green-400" />
+          <Clock className="h-5 w-5 ml-3 text-green-400" />
           <div className="flex flex-col">
-            <span>بداية الامتحان: {startTime}</span>
-            <span>نهاية الامتحان: {endTime}</span>
+            <span>من {startTime} إلى {endTime}</span>
+            <span className="text-sm text-gray-400">مدة الامتحان: ساعتان</span>
           </div>
-        </div>
-
-        <div className="flex items-center text-gray-300">
-          <MapPin className="h-5 w-5 mr-3 text-purple-400" />
-          <span>قاعة الامتحان: سيتم الإعلان عنها لاحقاً</span>
         </div>
       </div>
 

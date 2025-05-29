@@ -89,28 +89,46 @@ const Index = () => {
 
   const nextExam = getNextExam();
 
-  const toggleNotifications = () => {
-    setNotificationsEnabled(!notificationsEnabled);
+  const toggleNotifications = async () => {
+    if (!notificationsEnabled) {
+      if ("Notification" in window) {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          setNotificationsEnabled(true);
+        } else {
+          alert("يجب السماح بالإشعارات لتفعيل هذه الميزة");
+        }
+      } else {
+        alert("متصفحك لا يدعم الإشعارات");
+      }
+    } else {
+      setNotificationsEnabled(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white" dir="rtl">
+    <div className="min-h-screen bg-gray-900 text-white font-arabic" dir="rtl">
       <main className="max-w-4xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">جدول الامتحانات</h1>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-6">جدول الامتحانات</h1>
+          
           <Button
             onClick={toggleNotifications}
             variant={notificationsEnabled ? "default" : "outline"}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-3 mx-auto px-6 py-3 text-lg rounded-xl transition-all duration-300 ${
+              notificationsEnabled 
+                ? 'bg-green-600 hover:bg-green-700 text-white border-green-600' 
+                : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-600'
+            }`}
           >
-            {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+            {notificationsEnabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5" />}
             {notificationsEnabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات"}
           </Button>
         </div>
 
         {nextExam && (
           <div className="mb-8">
-            <div className="bg-gray-800 rounded-lg p-8 text-center">
+            <div className="bg-gray-800 rounded-2xl p-8 text-center border border-gray-700">
               <h2 className="text-2xl font-bold text-white mb-2">الامتحان القادم</h2>
               <p className="text-blue-400 text-xl mb-2">{nextExam.subject}</p>
               <p className="text-gray-300 mb-6">{nextExam.day} - {nextExam.date}</p>
@@ -120,7 +138,7 @@ const Index = () => {
         )}
 
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white">جميع الامتحانات</h2>
+          <h2 className="text-2xl font-bold text-white text-center">جميع الامتحانات</h2>
           {exams.map((exam) => (
             <ExamCard key={exam.id} exam={exam} />
           ))}

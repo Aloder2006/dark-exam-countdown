@@ -1,6 +1,5 @@
 
 import React, { useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
 
 interface Exam {
   id: number;
@@ -15,8 +14,6 @@ interface NotificationSystemProps {
 }
 
 const NotificationSystem: React.FC<NotificationSystemProps> = ({ exams }) => {
-  const { toast } = useToast();
-
   useEffect(() => {
     const checkNotifications = () => {
       const now = new Date();
@@ -32,10 +29,10 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ exams }) => {
           const notificationKey = `${exam.id}-1day`;
           const hasShown = localStorage.getItem(notificationKey);
           
-          if (!hasShown) {
-            toast({
-              title: "تذكير امتحان",
-              description: `امتحان ${exam.subject} غداً - ${startTime}`,
+          if (!hasShown && "Notification" in window && Notification.permission === "granted") {
+            new Notification("تذكير امتحان", {
+              body: `امتحان ${exam.subject} غداً - ${startTime}`,
+              icon: "/favicon.ico"
             });
             localStorage.setItem(notificationKey, 'true');
           }
@@ -47,7 +44,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ exams }) => {
     const interval = setInterval(checkNotifications, 60000);
 
     return () => clearInterval(interval);
-  }, [exams, toast]);
+  }, [exams]);
 
   return null;
 };

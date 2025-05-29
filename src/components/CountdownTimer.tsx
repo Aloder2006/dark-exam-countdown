@@ -43,22 +43,22 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
   }, [targetDate]);
 
   const timeUnits = [
-    { value: timeRemaining.days, label: 'يوم', color: 'from-red-500 to-red-600' },
-    { value: timeRemaining.hours, label: 'ساعة', color: 'from-orange-500 to-orange-600' },
-    { value: timeRemaining.minutes, label: 'دقيقة', color: 'from-yellow-500 to-yellow-600' },
-    { value: timeRemaining.seconds, label: 'ثانية', color: 'from-green-500 to-green-600' }
+    { value: timeRemaining.days, label: 'يوم' },
+    { value: timeRemaining.hours, label: 'ساعة' },
+    { value: timeRemaining.minutes, label: 'دقيقة' },
+    { value: timeRemaining.seconds, label: 'ثانية' }
   ];
 
   return (
     <div className="flex justify-center items-center space-x-4 rtl:space-x-reverse">
       {timeUnits.map((unit, index) => (
         <div key={index} className="text-center">
-          <div className={`bg-gradient-to-br ${unit.color} rounded-lg p-4 min-w-[80px] shadow-lg transform hover:scale-105 transition-transform duration-200`}>
-            <div className="text-3xl font-bold text-white">
+          <div className="bg-gray-700 rounded-lg p-3 min-w-[70px] border border-gray-600">
+            <div className="text-2xl font-bold text-white">
               {unit.value.toString().padStart(2, '0')}
             </div>
           </div>
-          <div className="text-gray-300 text-sm mt-2 font-medium">
+          <div className="text-gray-400 text-sm mt-2">
             {unit.label}
           </div>
         </div>

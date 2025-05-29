@@ -4,7 +4,8 @@ import ExamCard from '../components/ExamCard';
 import CountdownTimer from '../components/CountdownTimer';
 import NotificationSystem from '../components/NotificationSystem';
 import { Toaster } from '../components/ui/toaster';
-import { BookOpen, Clock } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Bell, BellOff } from 'lucide-react';
 
 interface Exam {
   id: number;
@@ -15,6 +16,8 @@ interface Exam {
 }
 
 const Index = () => {
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  
   const [exams] = useState<Exam[]>([
     {
       id: 1,
@@ -85,24 +88,26 @@ const Index = () => {
   };
 
   const nextExam = getNextExam();
-  const remainingExams = exams.filter(exam => {
-    const [startTime] = exam.time.split(' - ');
-    const examDateTime = new Date(`${exam.date}T${startTime}`);
-    return examDateTime > new Date();
-  }).length;
+
+  const toggleNotifications = () => {
+    setNotificationsEnabled(!notificationsEnabled);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <header className="bg-gray-800 py-6">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex items-center space-x-3">
-            <BookOpen className="h-8 w-8 text-blue-400" />
-            <h1 className="text-3xl font-bold text-white">جدول الامتحانات</h1>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gray-900 text-white" dir="rtl">
       <main className="max-w-4xl mx-auto p-6">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">جدول الامتحانات</h1>
+          <Button
+            onClick={toggleNotifications}
+            variant={notificationsEnabled ? "default" : "outline"}
+            className="flex items-center gap-2"
+          >
+            {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+            {notificationsEnabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات"}
+          </Button>
+        </div>
+
         {nextExam && (
           <div className="mb-8">
             <div className="bg-gray-800 rounded-lg p-8 text-center">
@@ -114,16 +119,6 @@ const Index = () => {
           </div>
         )}
 
-        <div className="mb-8 text-center">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="flex items-center justify-center space-x-4">
-              <Clock className="h-6 w-6 text-blue-400" />
-              <span className="text-xl text-gray-300">الامتحانات المتبقية:</span>
-              <span className="text-2xl font-bold text-blue-400">{remainingExams}</span>
-            </div>
-          </div>
-        </div>
-
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-white">جميع الامتحانات</h2>
           {exams.map((exam) => (
@@ -132,7 +127,7 @@ const Index = () => {
         </div>
       </main>
 
-      <NotificationSystem exams={exams} />
+      {notificationsEnabled && <NotificationSystem exams={exams} />}
       <Toaster />
     </div>
   );

@@ -27,21 +27,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ exams }) => {
         const timeDiff = examDateTime.getTime() - now.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
-        // إشعار قبل 3 أيام
-        if (daysDiff === 3) {
-          const notificationKey = `${exam.id}-3days`;
-          const hasShown = localStorage.getItem(notificationKey);
-          
-          if (!hasShown) {
-            toast({
-              title: "تذكير امتحان",
-              description: `امتحان ${exam.subject} خلال 3 أيام - ${exam.day}`,
-            });
-            localStorage.setItem(notificationKey, 'true');
-          }
-        }
-
-        // إشعار قبل يوم واحد
+        // إشعار قبل يوم واحد فقط
         if (daysDiff === 1) {
           const notificationKey = `${exam.id}-1day`;
           const hasShown = localStorage.getItem(notificationKey);

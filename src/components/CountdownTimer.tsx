@@ -50,16 +50,18 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
   ];
 
   return (
-    <div className="flex justify-center items-center space-x-4 rtl:space-x-reverse">
+    <div className="flex justify-center items-center">
       {timeUnits.map((unit, index) => (
         <div key={index} className="text-center">
-          <div className="bg-gray-700 rounded-lg p-3 min-w-[70px] border border-gray-600">
-            <div className="text-2xl font-bold text-white">
+          <div className={`bg-gray-800 p-4 min-w-[80px] border-r border-gray-600 ${
+            index === 0 ? 'rounded-r-lg' : ''
+          } ${index === timeUnits.length - 1 ? 'rounded-l-lg border-r-0' : ''}`}>
+            <div className="text-3xl font-bold text-white">
               {unit.value.toString().padStart(2, '0')}
             </div>
-          </div>
-          <div className="text-gray-400 text-sm mt-2">
-            {unit.label}
+            <div className="text-gray-400 text-xs mt-1">
+              {unit.label}
+            </div>
           </div>
         </div>
       ))}

@@ -1,11 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ExamCard from '../components/ExamCard';
 import CountdownTimer from '../components/CountdownTimer';
 import NotificationSystem from '../components/NotificationSystem';
 import { Toaster } from '../components/ui/toaster';
 import { Button } from '../components/ui/button';
-import { Bell, BellOff } from 'lucide-react';
+import { Bell, BellOff, Settings } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Switch } from '../components/ui/switch';
+import { Label } from '../components/ui/label';
 
 interface Exam {
   id: number;
@@ -15,8 +18,22 @@ interface Exam {
   day: string;
 }
 
+interface NotificationSettings {
+  enabled: boolean;
+  oneDayBefore: boolean;
+  oneHourBefore: boolean;
+  thirtyMinBefore: boolean;
+  sound: boolean;
+}
+
 const Index = () => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+    enabled: false,
+    oneDayBefore: true,
+    oneHourBefore: true,
+    thirtyMinBefore: true,
+    sound: true
+  });
   
   const [exams] = useState<Exam[]>([
     {
@@ -70,6 +87,19 @@ const Index = () => {
     }
   ]);
 
+  // تحميل الإعدادات من localStorage عند التحميل الأول
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('notificationSettings');
+    if (savedSettings) {
+      setNotificationSettings(JSON.parse(savedSettings));
+    }
+  }, []);
+
+  // حفظ الإعدادات في localStorage عند التغيير
+  useEffect(() => {
+    localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+  }, [notificationSettings]);
+
   const getNextExam = () => {
     const now = new Date();
     const upcomingExams = exams.filter(exam => {
@@ -90,11 +120,11 @@ const Index = () => {
   const nextExam = getNextExam();
 
   const toggleNotifications = async () => {
-    if (!notificationsEnabled) {
+    if (!notificationSettings.enabled) {
       if ("Notification" in window) {
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
-          setNotificationsEnabled(true);
+          setNotificationSettings(prev => ({ ...prev, enabled: true }));
         } else {
           alert("يجب السماح بالإشعارات لتفعيل هذه الميزة");
         }
@@ -102,50 +132,105 @@ const Index = () => {
         alert("متصفحك لا يدعم الإشعارات");
       }
     } else {
-      setNotificationsEnabled(false);
+      setNotificationSettings(prev => ({ ...prev, enabled: false }));
     }
   };
 
+  const updateNotificationSetting = (key: keyof NotificationSettings, value: boolean) => {
+    setNotificationSettings(prev => ({ ...prev, [key]: value }));
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-arabic" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white font-arabic" dir="rtl">
       <main className="max-w-4xl mx-auto p-6">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-6">جدول الامتحانات</h1>
+          <h1 className="text-5xl font-bold text-white mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            جدول الامتحانات
+          </h1>
           
-          <Button
-            onClick={toggleNotifications}
-            variant={notificationsEnabled ? "default" : "outline"}
-            className={`flex items-center gap-3 mx-auto px-6 py-3 text-lg rounded-xl transition-all duration-300 ${
-              notificationsEnabled 
-                ? 'bg-green-600 hover:bg-green-700 text-white border-green-600' 
-                : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-600'
-            }`}
-          >
-            {notificationsEnabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5" />}
-            {notificationsEnabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات"}
-          </Button>
+          <div className="flex justify-center items-center gap-4 mb-6">
+            <Button
+              onClick={toggleNotifications}
+              variant={notificationSettings.enabled ? "default" : "outline"}
+              className={`flex items-center gap-3 px-6 py-3 text-lg rounded-xl transition-all duration-300 ${
+                notificationSettings.enabled 
+                  ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-lg shadow-green-600/25' 
+                  : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-600'
+              }`}
+            >
+              {notificationSettings.enabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5" />}
+              {notificationSettings.enabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات"}
+            </Button>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-xl border-gray-600 hover:bg-gray-700">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-800 border-gray-700 text-white" dir="rtl">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold text-center">إعدادات الإشعارات</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 mt-6">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="oneDayBefore" className="text-base">إشعار قبل يوم واحد</Label>
+                    <Switch
+                      id="oneDayBefore"
+                      checked={notificationSettings.oneDayBefore}
+                      onCheckedChange={(checked) => updateNotificationSetting('oneDayBefore', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="oneHourBefore" className="text-base">إشعار قبل ساعة واحدة</Label>
+                    <Switch
+                      id="oneHourBefore"
+                      checked={notificationSettings.oneHourBefore}
+                      onCheckedChange={(checked) => updateNotificationSetting('oneHourBefore', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="thirtyMinBefore" className="text-base">إشعار قبل 30 دقيقة</Label>
+                    <Switch
+                      id="thirtyMinBefore"
+                      checked={notificationSettings.thirtyMinBefore}
+                      onCheckedChange={(checked) => updateNotificationSetting('thirtyMinBefore', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="sound" className="text-base">تشغيل الصوت</Label>
+                    <Switch
+                      id="sound"
+                      checked={notificationSettings.sound}
+                      onCheckedChange={(checked) => updateNotificationSetting('sound', checked)}
+                    />
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         {nextExam && (
           <div className="mb-8">
-            <div className="bg-gray-800 rounded-2xl p-8 text-center border border-gray-700">
-              <h2 className="text-2xl font-bold text-white mb-2">الامتحان القادم</h2>
-              <p className="text-blue-400 text-xl mb-2">{nextExam.subject}</p>
-              <p className="text-gray-300 mb-6">{nextExam.day} - {nextExam.date}</p>
+            <div className="bg-gradient-to-r from-gray-800 to-blue-800 rounded-2xl p-8 text-center border border-gray-700 shadow-2xl">
+              <h2 className="text-3xl font-bold text-white mb-2">الامتحان القادم</h2>
+              <p className="text-blue-300 text-2xl mb-2 font-semibold">{nextExam.subject}</p>
+              <p className="text-gray-300 mb-6 text-lg">{nextExam.day} - {nextExam.date}</p>
               <CountdownTimer targetDate={`${nextExam.date}T${nextExam.time.split(' - ')[0]}`} />
             </div>
           </div>
         )}
 
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white text-center">جميع الامتحانات</h2>
+          <h2 className="text-3xl font-bold text-white text-center mb-8">جميع الامتحانات</h2>
           {exams.map((exam) => (
             <ExamCard key={exam.id} exam={exam} />
           ))}
         </div>
       </main>
 
-      {notificationsEnabled && <NotificationSystem exams={exams} />}
+      {notificationSettings.enabled && <NotificationSystem exams={exams} settings={notificationSettings} />}
       <Toaster />
     </div>
   );

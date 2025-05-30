@@ -34,6 +34,8 @@ const Index = () => {
     thirtyMinBefore: true,
     sound: true
   });
+
+  const [isLoading, setIsLoading] = useState(false);
   
   const [exams] = useState<Exam[]>([
     {
@@ -89,15 +91,24 @@ const Index = () => {
 
   // تحميل الإعدادات من localStorage عند التحميل الأول
   useEffect(() => {
-    const savedSettings = localStorage.getItem('notificationSettings');
-    if (savedSettings) {
-      setNotificationSettings(JSON.parse(savedSettings));
+    try {
+      const savedSettings = localStorage.getItem('notificationSettings');
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings);
+        setNotificationSettings(parsed);
+      }
+    } catch (error) {
+      console.error('Error loading notification settings:', error);
     }
   }, []);
 
   // حفظ الإعدادات في localStorage عند التغيير
   useEffect(() => {
-    localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+    try {
+      localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+    } catch (error) {
+      console.error('Error saving notification settings:', error);
+    }
   }, [notificationSettings]);
 
   const getNextExam = () => {
@@ -120,25 +131,47 @@ const Index = () => {
   const nextExam = getNextExam();
 
   const toggleNotifications = async () => {
-    if (!notificationSettings.enabled) {
-      if ("Notification" in window) {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          setNotificationSettings(prev => ({ ...prev, enabled: true }));
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    
+    try {
+      if (!notificationSettings.enabled) {
+        if ("Notification" in window) {
+          console.log('Requesting notification permission...');
+          const permission = await Notification.requestPermission();
+          console.log('Permission result:', permission);
+          
+          if (permission === "granted") {
+            setNotificationSettings(prev => ({ ...prev, enabled: true }));
+          } else {
+            alert("يجب السماح بالإشعارات لتفعيل هذه الميزة");
+          }
         } else {
-          alert("يجب السماح بالإشعارات لتفعيل هذه الميزة");
+          alert("متصفحك لا يدعم الإشعارات");
         }
       } else {
-        alert("متصفحك لا يدعم الإشعارات");
+        setNotificationSettings(prev => ({ ...prev, enabled: false }));
       }
-    } else {
-      setNotificationSettings(prev => ({ ...prev, enabled: false }));
+    } catch (error) {
+      console.error('Error toggling notifications:', error);
+      alert("حدث خطأ أثناء تفعيل الإشعارات");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const updateNotificationSetting = (key: keyof NotificationSettings, value: boolean) => {
     setNotificationSettings(prev => ({ ...prev, [key]: value }));
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white font-arabic flex items-center justify-center" dir="rtl">
+        <div className="text-2xl">جاري التحميل...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white font-arabic" dir="rtl">
@@ -152,6 +185,7 @@ const Index = () => {
             <Button
               onClick={toggleNotifications}
               variant={notificationSettings.enabled ? "default" : "outline"}
+              disabled={isLoading}
               className={`flex items-center gap-3 px-6 py-3 text-lg rounded-xl transition-all duration-300 ${
                 notificationSettings.enabled 
                   ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-lg shadow-green-600/25' 
@@ -159,7 +193,7 @@ const Index = () => {
               }`}
             >
               {notificationSettings.enabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5" />}
-              {notificationSettings.enabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات"}
+              {isLoading ? "جاري التحميل..." : (notificationSettings.enabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات")}
             </Button>
 
             <Dialog>

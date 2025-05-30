@@ -50,25 +50,25 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
   ];
 
   return (
-    <div className="flex justify-center items-center gap-2 sm:gap-4 px-2">
+    <div className="flex justify-center items-center gap-1.5 sm:gap-3 px-2">
       {timeUnits.map((unit, index) => (
-        <div key={index} className="text-center group flex-1 max-w-[80px] sm:max-w-none">
-          <div className={`relative bg-gradient-to-br ${unit.color} p-3 sm:p-6 min-w-[70px] sm:min-w-[90px] min-h-[70px] sm:min-h-[90px] rounded-xl sm:rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300 border border-white/10`}>
+        <div key={index} className="text-center group flex-1 max-w-[60px] sm:max-w-[70px]">
+          <div className={`relative bg-gradient-to-br ${unit.color} p-2 sm:p-3 min-w-[55px] sm:min-w-[65px] min-h-[55px] sm:min-h-[65px] rounded-lg sm:rounded-xl shadow-xl transform group-hover:scale-105 transition-all duration-300 border border-white/10`}>
             {/* Glow effect */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${unit.color} rounded-xl sm:rounded-2xl blur-lg sm:blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300`}></div>
+            <div className={`absolute inset-0 bg-gradient-to-br ${unit.color} rounded-lg sm:rounded-xl blur-md opacity-40 group-hover:opacity-60 transition-opacity duration-300`}></div>
             
             <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <div className="text-xl sm:text-3xl font-black text-white mb-1 drop-shadow-lg">
+              <div className="text-lg sm:text-2xl font-black text-white mb-0.5 drop-shadow-lg">
                 {unit.value.toString().padStart(2, '0')}
               </div>
-              <div className="text-white/90 text-xs sm:text-sm font-bold uppercase tracking-wider">
+              <div className="text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
                 {unit.label}
               </div>
             </div>
             
             {/* Corner decorations */}
-            <div className="absolute top-1 sm:top-2 right-1 sm:right-2 w-1 h-1 bg-white/50 rounded-full"></div>
-            <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2 w-1 h-1 bg-white/50 rounded-full"></div>
+            <div className="absolute top-1 right-1 w-0.5 h-0.5 bg-white/50 rounded-full"></div>
+            <div className="absolute bottom-1 left-1 w-0.5 h-0.5 bg-white/50 rounded-full"></div>
           </div>
         </div>
       ))}

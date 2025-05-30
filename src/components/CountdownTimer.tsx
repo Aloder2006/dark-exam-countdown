@@ -43,25 +43,32 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
   }, [targetDate]);
 
   const timeUnits = [
-    { value: timeRemaining.days, label: 'يوم' },
-    { value: timeRemaining.hours, label: 'ساعة' },
-    { value: timeRemaining.minutes, label: 'دقيقة' },
-    { value: timeRemaining.seconds, label: 'ثانية' }
+    { value: timeRemaining.days, label: 'يوم', color: 'from-red-500 to-pink-500' },
+    { value: timeRemaining.hours, label: 'ساعة', color: 'from-orange-500 to-amber-500' },
+    { value: timeRemaining.minutes, label: 'دقيقة', color: 'from-green-500 to-emerald-500' },
+    { value: timeRemaining.seconds, label: 'ثانية', color: 'from-blue-500 to-cyan-500' }
   ];
 
   return (
-    <div className="flex justify-center items-center gap-0">
+    <div className="flex justify-center items-center gap-4">
       {timeUnits.map((unit, index) => (
-        <div key={index} className="text-center">
-          <div className={`bg-gray-700 p-4 min-w-[70px] border border-gray-600 ${
-            index === 0 ? 'rounded-r-xl' : ''
-          } ${index === timeUnits.length - 1 ? 'rounded-l-xl' : ''}`}>
-            <div className="text-2xl font-bold text-white">
-              {unit.value.toString().padStart(2, '0')}
+        <div key={index} className="text-center group">
+          <div className={`relative bg-gradient-to-br ${unit.color} p-6 min-w-[90px] min-h-[90px] rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300 border border-white/10`}>
+            {/* Glow effect */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${unit.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300`}></div>
+            
+            <div className="relative z-10">
+              <div className="text-3xl font-black text-white mb-1 drop-shadow-lg">
+                {unit.value.toString().padStart(2, '0')}
+              </div>
+              <div className="text-white/90 text-sm font-bold uppercase tracking-wider">
+                {unit.label}
+              </div>
             </div>
-            <div className="text-gray-400 text-xs mt-1">
-              {unit.label}
-            </div>
+            
+            {/* Corner decorations */}
+            <div className="absolute top-2 right-2 w-1 h-1 bg-white/50 rounded-full"></div>
+            <div className="absolute bottom-2 left-2 w-1 h-1 bg-white/50 rounded-full"></div>
           </div>
         </div>
       ))}

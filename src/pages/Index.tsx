@@ -5,7 +5,7 @@ import CountdownTimer from '../components/CountdownTimer';
 import NotificationSystem from '../components/NotificationSystem';
 import { Toaster } from '../components/ui/toaster';
 import { Button } from '../components/ui/button';
-import { Bell, BellOff, Settings } from 'lucide-react';
+import { Bell, BellOff, Settings, Calendar, Clock, Star } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
@@ -167,72 +167,86 @@ const Index = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white font-arabic flex items-center justify-center" dir="rtl">
-        <div className="text-2xl">جاري التحميل...</div>
+      <div className="min-h-screen bg-black text-white font-arabic flex items-center justify-center" dir="rtl">
+        <div className="text-2xl animate-pulse">جاري التحميل...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white font-arabic" dir="rtl">
-      <main className="max-w-4xl mx-auto p-6">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            جدول الامتحانات
+    <div className="min-h-screen bg-black text-white font-arabic relative overflow-hidden" dir="rtl">
+      {/* Background gradient effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+      
+      <main className="relative z-10 max-w-6xl mx-auto p-6">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-black text-white mb-4 tracking-tight">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              جدول الامتحانات
+            </span>
           </h1>
+          <p className="text-gray-400 text-lg mb-8">نظام ذكي لتنظيم امتحاناتك وإدارة وقتك بكفاءة</p>
           
-          <div className="flex justify-center items-center gap-4 mb-6">
+          <div className="flex justify-center items-center gap-6 mb-8">
             <Button
               onClick={toggleNotifications}
               variant={notificationSettings.enabled ? "default" : "outline"}
               disabled={isLoading}
-              className={`flex items-center gap-3 px-6 py-3 text-lg rounded-xl transition-all duration-300 ${
+              className={`flex items-center gap-3 px-8 py-4 text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 ${
                 notificationSettings.enabled 
-                  ? 'bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-lg shadow-green-600/25' 
-                  : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-600'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-2xl shadow-green-500/25' 
+                  : 'bg-gray-900/50 hover:bg-gray-800/80 text-gray-300 border-gray-700 backdrop-blur-sm'
               }`}
             >
-              {notificationSettings.enabled ? <Bell className="h-5 w-5" /> : <BellOff className="h-5 w-5" />}
+              {notificationSettings.enabled ? <Bell className="h-6 w-6" /> : <BellOff className="h-6 w-6" />}
               {isLoading ? "جاري التحميل..." : (notificationSettings.enabled ? "الإشعارات مفعلة" : "تفعيل الإشعارات")}
             </Button>
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-xl border-gray-600 hover:bg-gray-700">
-                  <Settings className="h-5 w-5" />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-14 w-14 rounded-2xl border-gray-700 bg-gray-900/50 hover:bg-gray-800/80 backdrop-blur-sm transform hover:scale-105 transition-all duration-300"
+                >
+                  <Settings className="h-6 w-6" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-gray-800 border-gray-700 text-white" dir="rtl">
+              <DialogContent className="bg-gray-900/95 border-gray-700 text-white backdrop-blur-xl rounded-3xl" dir="rtl">
                 <DialogHeader>
-                  <DialogTitle className="text-xl font-bold text-center">إعدادات الإشعارات</DialogTitle>
+                  <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    إعدادات الإشعارات
+                  </DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6 mt-6">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="oneDayBefore" className="text-base">إشعار قبل يوم واحد</Label>
+                <div className="space-y-6 mt-8">
+                  <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm">
+                    <Label htmlFor="oneDayBefore" className="text-lg">إشعار قبل يوم واحد</Label>
                     <Switch
                       id="oneDayBefore"
                       checked={notificationSettings.oneDayBefore}
                       onCheckedChange={(checked) => updateNotificationSetting('oneDayBefore', checked)}
                     />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="oneHourBefore" className="text-base">إشعار قبل ساعة واحدة</Label>
+                  <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm">
+                    <Label htmlFor="oneHourBefore" className="text-lg">إشعار قبل ساعة واحدة</Label>
                     <Switch
                       id="oneHourBefore"
                       checked={notificationSettings.oneHourBefore}
                       onCheckedChange={(checked) => updateNotificationSetting('oneHourBefore', checked)}
                     />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="thirtyMinBefore" className="text-base">إشعار قبل 30 دقيقة</Label>
+                  <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm">
+                    <Label htmlFor="thirtyMinBefore" className="text-lg">إشعار قبل 30 دقيقة</Label>
                     <Switch
                       id="thirtyMinBefore"
                       checked={notificationSettings.thirtyMinBefore}
                       onCheckedChange={(checked) => updateNotificationSetting('thirtyMinBefore', checked)}
                     />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="sound" className="text-base">تشغيل الصوت</Label>
+                  <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl backdrop-blur-sm">
+                    <Label htmlFor="sound" className="text-lg">تشغيل الصوت</Label>
                     <Switch
                       id="sound"
                       checked={notificationSettings.sound}
@@ -246,21 +260,69 @@ const Index = () => {
         </div>
 
         {nextExam && (
-          <div className="mb-8">
-            <div className="bg-gradient-to-r from-gray-800 to-blue-800 rounded-2xl p-8 text-center border border-gray-700 shadow-2xl">
-              <h2 className="text-3xl font-bold text-white mb-2">الامتحان القادم</h2>
-              <p className="text-blue-300 text-2xl mb-2 font-semibold">{nextExam.subject}</p>
-              <p className="text-gray-300 mb-6 text-lg">{nextExam.day} - {nextExam.date}</p>
-              <CountdownTimer targetDate={`${nextExam.date}T${nextExam.time.split(' - ')[0]}`} />
+          <div className="mb-16">
+            <div className="relative group">
+              {/* Enhanced Next Exam Card */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+              <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50 shadow-2xl">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full border border-amber-500/30">
+                    <Star className="h-5 w-5 text-amber-400" />
+                    <span className="text-amber-400 font-bold text-lg">الامتحان القادم</span>
+                    <Star className="h-5 w-5 text-amber-400" />
+                  </div>
+                </div>
+                
+                <div className="text-center mb-8">
+                  <h2 className="text-4xl font-black text-white mb-4 leading-tight">
+                    {nextExam.subject}
+                  </h2>
+                  
+                  <div className="flex justify-center items-center gap-8 mb-6 text-gray-300">
+                    <div className="flex items-center gap-3 px-4 py-2 bg-gray-800/50 rounded-xl backdrop-blur-sm">
+                      <Calendar className="h-5 w-5 text-blue-400" />
+                      <span className="font-semibold">{nextExam.day}</span>
+                    </div>
+                    <div className="flex items-center gap-3 px-4 py-2 bg-gray-800/50 rounded-xl backdrop-blur-sm">
+                      <Clock className="h-5 w-5 text-green-400" />
+                      <span className="font-semibold">{nextExam.time}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-2xl text-gray-300 mb-8 font-medium">
+                    {nextExam.date}
+                  </div>
+                </div>
+                
+                <CountdownTimer targetDate={`${nextExam.date}T${nextExam.time.split(' - ')[0]}`} />
+                
+                {/* Decorative elements */}
+                <div className="absolute top-4 right-4 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute top-4 left-4 w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute bottom-4 right-4 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute bottom-4 left-4 w-2 h-2 bg-pink-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+              </div>
             </div>
           </div>
         )}
 
-        <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-white text-center mb-8">جميع الامتحانات</h2>
-          {exams.map((exam) => (
-            <ExamCard key={exam.id} exam={exam} />
-          ))}
+        <div className="space-y-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              <span className="bg-gradient-to-r from-gray-300 to-gray-500 bg-clip-text text-transparent">
+                جميع الامتحانات
+              </span>
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+          </div>
+          
+          <div className="grid gap-6">
+            {exams.map((exam, index) => (
+              <div key={exam.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                <ExamCard exam={exam} />
+              </div>
+            ))}
+          </div>
         </div>
       </main>
 
